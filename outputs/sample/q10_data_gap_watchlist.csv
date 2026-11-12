@@ -1,0 +1,2 @@
+department,n_lines,sales_value,pct_lines_missing_category,pct_lines_demo_unknown,pct_lines_promo,sales_rank,gap_flag
+MISCELLANEOUS,4871,78858.67,28.89,43.91,36.52,8,hierarchy_gap

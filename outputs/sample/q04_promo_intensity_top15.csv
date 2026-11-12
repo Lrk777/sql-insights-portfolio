@@ -1,0 +1,16 @@
+department,n_lines,n_promo_lines,pct_lines_on_promo,sales_value,promo_sales_value,pct_sales_on_promo,promo_band
+FUEL,12997,11836.0,91.07,329594.45,309814.78,94.0,high_promo_reliance
+SEAFOOD-PCKGD,6428,4423.0,68.81,35977.46,25272.21,70.24,high_promo_reliance
+MISCELLANEOUS,4871,1779.0,36.52,78858.67,54451.11,69.05,high_promo_reliance
+MEAT-PCKGD,63041,40313.0,63.95,232282.53,147762.72,63.61,high_promo_reliance
+MEAT,49822,27730.0,55.66,308575.33,174078.5,56.41,high_promo_reliance
+GROCERY,928997,538278.0,57.94,2316393.89,1283577.41,55.41,high_promo_reliance
+DELI,35478,15060.0,42.45,148344.06,62457.58,42.1,mid_promo_reliance
+NUTRITION,18595,8440.0,45.39,57261.22,22099.96,38.59,mid_promo_reliance
+SEAFOOD,2339,881.0,37.67,17081.36,6535.29,38.26,mid_promo_reliance
+COSMETICS,4470,1850.0,41.39,18987.44,6781.64,35.72,mid_promo_reliance
+PASTRY,21719,7271.0,33.48,69116.68,20223.68,29.26,mid_promo_reliance
+DRUG GM,156171,48131.0,30.82,596827.45,169626.82,28.42,mid_promo_reliance
+TRAVEL & LEISURE,475,145.0,30.53,1425.68,349.52,24.52,low_promo_reliance
+PRODUCE,147651,35799.0,24.25,322858.82,75416.34,23.36,low_promo_reliance
+GARDEN CENTER,484,49.0,10.12,5351.79,659.59,12.32,low_promo_reliance

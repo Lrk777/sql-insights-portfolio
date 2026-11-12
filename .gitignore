@@ -1,0 +1,21 @@
+# Local database
+*.duckdb
+*.duckdb.wal
+
+# Raw Dunnhumby / Complete Journey extracts (do not redistribute)
+data/raw/*
+!data/raw/.gitkeep
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Large regenerable outputs (keep small samples under outputs/sample/)
+outputs/*.csv
+!outputs/sample/

@@ -1,0 +1,13 @@
+check_id,check_name,metric_value,notes
+DQ01,txn_row_count,1469307.0,expect ~1.47M in this pin
+DQ02,distinct_households_in_txn,2469.0,
+DQ03,demographics_row_count,801.0,partial panel — not all shoppers
+DQ04,demo_coverage_of_txn_hh_pct,32.44228432563791,share of purchasing HH that have demographics
+DQ05,orphan_product_ids_in_txn,4836.0,txn product_id with no products row
+DQ06,products_missing_department,0.0,
+DQ07,products_missing_category,540.0,
+DQ08,orphan_redemptions_no_coupon_row,0.0,redemption coupon_upc+campaign with no coupons match
+DQ09,orphan_redemptions_hh_not_targeted,0.0,redeeming HH not in campaigns for that campaign_id
+DQ10,avg_products_per_coupon_upc_campaign,97.07936507936508,fan-out risk if joining coupons carelessly to baskets
+DQ11,txn_negative_or_zero_sales_lines,11226.0,
+DQ12,duplicate_demo_household_ids,0.0,
