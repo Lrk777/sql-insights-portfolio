@@ -14,45 +14,33 @@ Which campaign types are worth repeating, how dependent are the big departments 
 4. **Two joins would silently corrupt reporting if done naively.** Each coupon UPC × campaign fans out to about 97 products. Separately, 4,836 transaction lines ($173) point to products that don't exist.
 5. **Miscellaneous is a data gap, not a category.** It ranks 8th by sales, but 29% of its lines have no category.
 
-```mermaid
----
-config:
-  xyChart:
-    width: 760
-    height: 360
----
-xychart-beta horizontal
-    title "Targeted households that redeemed, by campaign type"
-    x-axis ["Type A (1,490 HH)", "Type B (995 HH)", "Type C (397 HH)"]
-    y-axis "% redeemed" 0 --> 30
-    bar [24.9, 11.7, 7.6]
-```
-```mermaid
----
-config:
-  xyChart:
-    width: 760
-    height: 360
----
-xychart-beta horizontal
-    title "Share of sales dollars on a discounted line, top 8 departments"
-    x-axis ["Grocery", "Drug Gm", "Fuel", "Produce", "Meat", "Meat-Pckgd", "Deli", "Miscellaneous"]
-    y-axis "% of sales $" 0 --> 100
-    bar [55.4, 28.4, 94.0, 23.4, 56.4, 63.6, 42.1, 69.0]
-```
-```mermaid
----
-config:
-  xyChart:
-    width: 760
-    height: 360
----
-xychart-beta horizontal
-    title "Households with demographics: share of households vs share of sales"
-    x-axis ["Share of households", "Share of sales dollars"]
-    y-axis "%" 0 --> 100
-    bar [32.4, 57.1]
-```
+**Targeted households that redeemed, by campaign type**
+
+| | % redeemed | |
+|---|---:|---|
+| Type A (1,490 HH) | 24.9% | `█████████████████` |
+| Type B (995 HH) | 11.7% | `████████` |
+| Type C (397 HH) | 7.6% | `█████` |
+
+**Share of sales dollars on a discounted line, top 8 departments**
+
+| | % of sales $ | |
+|---|---:|---|
+| Grocery | 55.4% | `███████████` |
+| Drug Gm | 28.4% | `██████` |
+| Fuel | 94.0% | `███████████████████` |
+| Produce | 23.4% | `█████` |
+| Meat | 56.4% | `███████████` |
+| Meat-Pckgd | 63.6% | `█████████████` |
+| Deli | 42.1% | `████████` |
+| Miscellaneous | 69.0% | `██████████████` |
+
+**Households with demographics: share of households vs share of sales**
+
+| | % | |
+|---|---:|---|
+| Share of households | 32.4% | `██████` |
+| Share of sales dollars | 57.1% | `███████████` |
 
 ## Recommendation
 
