@@ -1,34 +1,82 @@
-# CPG Category & Promo Insights — SQL Lab
+# CPG Category & Promo Insights: SQL Lab
 
-SQL-first portfolio project for **BI / insights / RGM / commercial analytics** roles.
+SQL analysis of a 1.47M-line grocery panel (2,469 households, one year of 2017 shopping) to answer the questions a category or promotions analyst gets every week. The data-quality checks decide which answers can be trusted.
 
-## Problem
+## The question
 
-How do category sales, promotions, and coupon campaigns behave in a multi-table grocery panel — and where is the data too incomplete to claim “lift” honestly?
+Which campaign types are worth repeating, how dependent are the big departments on discounts, and which customer metrics are biased by gaps in the data?
 
-## Why this project
+## Key findings
 
-Built for GTA new-grad **CPG / RGM / category insights** talk-tracks (promo intensity, basket behaviour, coupon DQ traps). Health-system analytics stay with my York Data Science Capstone (Grace Hospital / Ontario home care). This repo shows **SQL versatility on commercial data**.
+1. **Type A campaigns convert best.** 24.9% of targeted households redeemed, against 11.7% for Type B and 7.6% for Type C. Per 100 coupon UPCs, Type A produced 213 redemptions; Type C produced 54.
+2. **Discounts drive a large share of sales.** 55% of Grocery sales dollars, 56% of Meat and 64% of packaged meat sit on a discounted line. For Fuel it is 94%, which says more about how "discount" is defined (any retail or coupon discount) than about real promo activity.
+3. **Demographic cuts overweight heavy shoppers.** Only 32.4% of households have a demographics record, yet they account for 57.1% of sales. Any "average customer by income" metric describes the bigger spenders.
+4. **Two joins would silently corrupt reporting if done naively.** Each coupon UPC × campaign fans out to about 97 products. Separately, 4,836 transaction lines ($173) point to products that don't exist.
+5. **Miscellaneous is a data gap, not a category.** It ranks 8th by sales, but 29% of its lines have no category.
 
-## Stack
+```mermaid
+---
+config:
+  xyChart:
+    width: 760
+    height: 360
+---
+xychart-beta horizontal
+    title "Targeted households that redeemed, by campaign type"
+    x-axis ["Type A (1,490 HH)", "Type B (995 HH)", "Type C (397 HH)"]
+    y-axis "% redeemed" 0 --> 30
+    bar [24.9, 11.7, 7.6]
+```
+```mermaid
+---
+config:
+  xyChart:
+    width: 760
+    height: 360
+---
+xychart-beta horizontal
+    title "Share of sales dollars on a discounted line, top 8 departments"
+    x-axis ["Grocery", "Drug Gm", "Fuel", "Produce", "Meat", "Meat-Pckgd", "Deli", "Miscellaneous"]
+    y-axis "% of sales $" 0 --> 100
+    bar [55.4, 28.4, 94.0, 23.4, 56.4, 63.6, 42.1, 69.0]
+```
+```mermaid
+---
+config:
+  xyChart:
+    width: 760
+    height: 360
+---
+xychart-beta horizontal
+    title "Households with demographics: share of households vs share of sales"
+    x-axis ["Share of households", "Share of sales dollars"]
+    y-axis "%" 0 --> 100
+    bar [32.4, 57.1]
+```
 
-- **DuckDB** + SQL (CTEs, windows, joins, `CASE`, anti-joins, DQ tables)
-- Markdown findings + sample query outputs
-- Thin Python runner only to execute `.sql` files
+## Recommendation
+
+| Decision | Why | Trade-off |
+|---|---|---|
+| Put the next campaign test into the Type A format, with a holdout group | It redeems at 2–3x the rate of B and C | There's no trade-spend cost in the data, so higher redemption isn't yet proof of higher return; the holdout measures true lift |
+| Cut or redesign Type C | 30 of 397 targeted households redeemed | A small sample of 6 campaigns; confirm on the next cycle before cutting |
+| Report demographic KPIs with a coverage caveat, or reweight to the full panel | Covered households skew to heavy spenders (57% of sales from 32% of households) | Reweighting adds a step every analyst has to understand |
+| Track Grocery and Meat "sales on discount" monthly | Over half their dollars already carry a discount, so margin is sensitive to promo depth | Needs a tighter promo definition than "any discount" to be meaningful |
+| Aggregate coupons before joining to baskets; fix orphan product IDs at source | Prevents a ~97x row fan-out and unmatched sales | One more staging step |
 
 ## Data
 
-- **Source:** Dunnhumby / 84.51° **Complete Journey** panel (via [completejourney](https://github.com/bradleyboehmke/completejourney) extract)
-- **Pin:** ~2,469 households · **1,469,307** transaction lines · campaigns / coupons / partial demographics
-- **License:** non-commercial / educational — attribute Dunnhumby / 84.51°; **raw CSVs not redistributed** (see `DATA_LICENSE.md`, `data/manifest.md`)
+| | |
+|---|---|
+| Source | Dunnhumby / 84.51° *The Complete Journey*, via the [completejourney](https://github.com/bradleyboehmke/completejourney) package |
+| Size | 1,469,307 transaction lines, 2,469 households, campaigns, coupons, partial demographics (2017) |
+| Licence | Non-commercial / educational. Raw CSVs are not redistributed; see `DATA_LICENSE.md` |
 
 ## Method
 
-`raw → DQ checks → staging views → line/basket marts → 10 insight queries`
+`raw → DQ checks → staging views → line and basket marts → 10 insight queries` in DuckDB. Techniques used: CTEs, `RANK` / `NTILE` / `LAG` windows, anti-joins, `CASE` bands, and null-safe denominators. The run order is in `sql/90_run_all.sql`, and the details are in [`findings/insights.md`](findings/insights.md).
 
-Promo lines are defined as `retail_disc > 0 OR coupon_disc > 0`. Campaign “success” starts with **targeting → redemption coverage**, not causal ROI (no trade-spend cost file).
-
-## Reproduce
+## How to run
 
 ```bash
 python3 -m pip install duckdb pyreadr pandas
@@ -36,31 +84,13 @@ python3 scripts/download_data.py          # writes gitignored data/raw/*.csv
 python3 scripts/run_pipeline.py --export-samples
 ```
 
-SQL order is listed in `sql/90_run_all.sql`.
+## Limitations and next steps
 
-## Key findings (from this pin’s query runs)
-
-1. **Demographics cover only 32.4% of purchasing households — but 57.1% of sales $.** Cohort KPIs on demos alone will systematically overweight heavier shoppers (`10_q01`).
-2. **4,836 transaction lines (≈$173 sales) have orphan `product_id`s**; coupon redemptions cleanly match coupon + campaign target tables in this extract (`11_q02`).
-3. **GROCERY is ~50.4% of sales** with 99.6% household penetration; FUEL is only ~7.2% of sales but **94% of FUEL sales $ sit on promo-flagged lines** — a classic “was the promo real, or is the metric definition the story?” interview beat (`12_q03`, `13_q04`).
-4. **Campaign redemption rates differ sharply by type:** Type A **24.9%** of targeted HH redeem vs Type B **11.7%** vs Type C **7.6%** (`14_q05`).
-5. **Coupon fan-out averages ~97 products per coupon UPC×campaign** — joining coupons to baskets without aggregation will explode rows (`01_dq_checks` DQ10).
-6. **MISCELLANEOUS** ranks in the top sales departments yet has **~29% of lines missing category** — a data-adequacy watch item, not a “bad category” claim (`19_q10`).
-
-More detail: [`findings/insights.md`](findings/insights.md) · sample CSVs under `outputs/sample/`.
-
-## SQL techniques demonstrated
-
-CTEs · `RANK` / `NTILE` / window `LAG` · multi-table joins · `CASE` bands · `GROUP BY` / `HAVING` · anti-join / `NOT EXISTS` · null-safe denominators · campaign date attributes · DQ result table
-
-## Limitations
-
-- US grocery panel — not Canadian POS / Nielsen syndicated data
-- Associations ≠ causal promo lift
-- Partial demographics; demo-only cohorts are biased toward covered HH
-- Optional `promotions` (display/mailer) table is large and not required for Q01–Q10
+- This is a US grocery panel, not Canadian POS or syndicated data.
+- Redemption and discount share are associations, not causal lift.
+- Demographics are partial, as described above.
+- Next: add trade-spend assumptions to estimate campaign ROI, and build a Tableau Public category scorecard on the marts.
 
 ## Author
 
-**Lavanya Kumar** · Bachelor of Data Science (Honours), Computation · York University · Graduating April 2027  
-GitHub: [Lrk777](https://github.com/Lrk777) · LinkedIn: [lavanya-kumar-610a07214](https://www.linkedin.com/in/lavanya-kumar-610a07214)
+Lavanya Kumar · Bachelor of Data Science (Honours), York University, graduating April 2027 · [GitHub](https://github.com/Lrk777) · [LinkedIn](https://www.linkedin.com/in/lavanya-kumar-610a07214)
